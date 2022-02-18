@@ -23,6 +23,7 @@ type UserClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserReply, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 	ListUser(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserReply, error)
+	GetLoginInfo(ctx context.Context, in *GetLoginInfoRequest, opts ...grpc.CallOption) (*GetLoginInfoReply, error)
 }
 
 type userClient struct {
@@ -78,6 +79,15 @@ func (c *userClient) ListUser(ctx context.Context, in *ListUserRequest, opts ...
 	return out, nil
 }
 
+func (c *userClient) GetLoginInfo(ctx context.Context, in *GetLoginInfoRequest, opts ...grpc.CallOption) (*GetLoginInfoReply, error) {
+	out := new(GetLoginInfoReply)
+	err := c.cc.Invoke(ctx, "/api.user.User/GetLoginInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -87,6 +97,7 @@ type UserServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserReply, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserReply, error)
 	ListUser(context.Context, *ListUserRequest) (*ListUserReply, error)
+	GetLoginInfo(context.Context, *GetLoginInfoRequest) (*GetLoginInfoReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -108,6 +119,9 @@ func (UnimplementedUserServer) GetUser(context.Context, *GetUserRequest) (*GetUs
 }
 func (UnimplementedUserServer) ListUser(context.Context, *ListUserRequest) (*ListUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUser not implemented")
+}
+func (UnimplementedUserServer) GetLoginInfo(context.Context, *GetLoginInfoRequest) (*GetLoginInfoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoginInfo not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -212,6 +226,24 @@ func _User_ListUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetLoginInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLoginInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetLoginInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.user.User/GetLoginInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetLoginInfo(ctx, req.(*GetLoginInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -238,6 +270,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUser",
 			Handler:    _User_ListUser_Handler,
+		},
+		{
+			MethodName: "GetLoginInfo",
+			Handler:    _User_GetLoginInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

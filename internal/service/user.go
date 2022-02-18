@@ -2,16 +2,21 @@ package service
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
+	"user_service/internal/biz"
 
 	pb "user_service/api/user"
 )
 
 type UserService struct {
 	pb.UnimplementedUserServer
+
+	uc  *biz.UserUsecase
+	log *log.Helper
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(uc *biz.UserUsecase, logger log.Logger) *UserService {
+	return &UserService{uc: uc, log: log.NewHelper(logger)}
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserReply, error) {
@@ -28,4 +33,16 @@ func (s *UserService) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.
 }
 func (s *UserService) ListUser(ctx context.Context, req *pb.ListUserRequest) (*pb.ListUserReply, error) {
 	return &pb.ListUserReply{}, nil
+}
+
+func (s *UserService) GetLoginInfo(ctx context.Context, req *pb.GetLoginInfoRequest) (*pb.GetLoginInfoReply, error) {
+	uid := ""
+	if req.Email == "test@qq.com" {
+		uid = "u_eNAjI9cFGZ1EfaoU" // 默认
+	}
+	if req.Phone == "12345678910" {
+		uid = "u_quVaM29CKonWxbes"
+	}
+	res := &pb.GetLoginInfoReply{Uid: uid}
+	return res, nil
 }

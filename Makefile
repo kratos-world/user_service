@@ -49,7 +49,12 @@ build:
 .PHONY: generate
 # generate
 generate:
-	go generate ./...
+	GOFLAGS=-mod=mod go generate ./...
+
+.PHONY: client
+# generate
+client:
+	kratos proto client api/user/user.proto
 
 .PHONY: all
 # generate all

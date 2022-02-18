@@ -2,16 +2,23 @@ syntax = "proto3";
 
 package api.user;
 
+import "google/api/annotations.proto";
+
 option go_package = "user_service/api/user;user";
 option java_multiple_files = true;
 option java_package = "api.user";
 
 service User {
-	rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
-	rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply);
-	rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
-	rpc GetUser (GetUserRequest) returns (GetUserReply);
-	rpc ListUser (ListUserRequest) returns (ListUserReply);
+  rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply);
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
+  rpc GetUser (GetUserRequest) returns (GetUserReply);
+  rpc ListUser (ListUserRequest) returns (ListUserReply);
+  rpc GetLoginInfo(GetLoginInfoRequest) returns (GetLoginInfoReply) {
+    option (google.api.http) = {
+      post: "/login_info"
+    };
+  };
 }
 
 message CreateUserRequest {}
@@ -23,8 +30,19 @@ message UpdateUserReply {}
 message DeleteUserRequest {}
 message DeleteUserReply {}
 
-message GetUserRequest {}
+message GetUserRequest {
+  string uid = 1;
+}
 message GetUserReply {}
 
 message ListUserRequest {}
 message ListUserReply {}
+
+message GetLoginInfoRequest {
+	string email = 1;
+	string phone = 2;
+}
+
+message GetLoginInfoReply {
+	string uid = 1;
+}

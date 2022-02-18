@@ -3,8 +3,36 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: User API
     version: 0.0.1
-paths: {}
+paths:
+    /login_info:
+        post:
+            tags:
+                - User
+            operationId: User_GetLoginInfo
+            parameters:
+                - name: email
+                  in: query
+                  schema:
+                    type: string
+                - name: phone
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetLoginInfoReply'
 components:
-    schemas: {}
+    schemas:
+        GetLoginInfoReply:
+            type: object
+            properties:
+                uid:
+                    type: string
+tags:
+    - name: User
