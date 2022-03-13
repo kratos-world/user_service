@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"user_service/internal/biz"
+	"github.com/kratos-world/user_service/internal/biz"
 )
 
 type userRepo struct {

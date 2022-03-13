@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"user_service/internal/biz"
+	"github.com/kratos-world/user_service/internal/biz"
 
-	pb "user_service/api/user"
+	pb "github.com/kratos-world/user_service/api/user"
 )
 
 type UserService struct {

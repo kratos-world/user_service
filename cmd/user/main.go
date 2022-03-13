@@ -14,7 +14,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"user_service/internal/conf"
+	"github.com/kratos-world/user_service/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"

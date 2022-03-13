@@ -10,11 +10,11 @@ import (
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"user_service/internal/biz"
-	"user_service/internal/conf"
-	"user_service/internal/data"
-	"user_service/internal/server"
-	"user_service/internal/service"
+	"github.com/kratos-world/user_service/internal/biz"
+	"github.com/kratos-world/user_service/internal/conf"
+	"github.com/kratos-world/user_service/internal/data"
+	"github.com/kratos-world/user_service/internal/server"
+	"github.com/kratos-world/user_service/internal/service"
 )
 
 // Injectors from wire.go:
