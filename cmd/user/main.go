@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
+	etcdv3 "go.etcd.io/etcd/client/v3"
 	"os"
+	"time"
 
-	"user_service/internal/conf"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -12,6 +14,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"user_service/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -27,10 +30,11 @@ var (
 )
 
 func init() {
+	Name = "user"
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, r *etcd.Registry) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -41,6 +45,7 @@ func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
 			hs,
 			gs,
 		),
+		kratos.Registrar(r),
 	)
 }
 
@@ -71,7 +76,20 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := initApp(bc.Server, bc.Data, logger)
+	// discovery
+	etcdClient, err := etcdv3.New(
+		etcdv3.Config{
+			Endpoints:   []string{"localhost:2379"},
+			DialTimeout: 5 * time.Second},
+	)
+	if err != nil {
+		panic(err)
+	}
+	defer etcdClient.Close()
+
+	r := etcd.New(etcdClient)
+
+	app, cleanup, err := initApp(bc.Server, bc.Data, logger, r)
 	if err != nil {
 		panic(err)
 	}

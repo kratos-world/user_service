@@ -51,6 +51,11 @@ build:
 generate:
 	GOFLAGS=-mod=mod go generate ./...
 
+.PHONY: run
+# generate internal proto
+run:
+	go run cmd/user/main.go cmd/user/wire_gen.go
+
 .PHONY: client
 # generate
 client:
