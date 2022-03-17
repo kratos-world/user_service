@@ -4,6 +4,12 @@ import (
 	"flag"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	etcdv3 "go.etcd.io/etcd/client/v3"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/sdk/resource"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -32,6 +38,27 @@ var (
 func init() {
 	Name = "user"
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+}
+
+func setTracerProvider() error {
+	// 由于没接入链路追踪UI，所以Trace信息暂时不输出
+	exp, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
+	if err != nil {
+		return err
+	}
+
+	tp := tracesdk.NewTracerProvider(
+		// Set the sampling rate based on the parent span to 100%
+		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+		// Always be sure to batch in production.
+		tracesdk.WithBatcher(exp),
+		// Record information about this application in an Resource.
+		tracesdk.WithResource(resource.NewSchemaless(
+			semconv.ServiceNameKey.String(Name),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	return nil
 }
 
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, r *etcd.Registry) *kratos.App {
@@ -88,6 +115,11 @@ func main() {
 	defer etcdClient.Close()
 
 	r := etcd.New(etcdClient)
+
+	// 链路追踪
+	if err := setTracerProvider(); err != nil {
+		panic(err)
+	}
 
 	app, cleanup, err := initApp(bc.Server, bc.Data, logger, r)
 	if err != nil {

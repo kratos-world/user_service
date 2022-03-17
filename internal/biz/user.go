@@ -23,6 +23,11 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 }
 
 func (uc *UserUsecase) GetUserInfoByEmail(ctx context.Context, email string) error {
+	//conn, err := grpc.Dial(
+	//	fmt.Sprintf("%s:///%s", r.Scheme(), SerName),
+	//	grpc.WithBalancerName("weight"),
+	//	grpc.WithInsecure(),
+	//)
 	return uc.repo.GetUserInfoByEmail(ctx, email)
 }
 

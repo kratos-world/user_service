@@ -36,6 +36,7 @@ func (s *UserService) ListUser(ctx context.Context, req *pb.ListUserRequest) (*p
 }
 
 func (s *UserService) GetLoginInfo(ctx context.Context, req *pb.GetLoginInfoRequest) (*pb.GetLoginInfoReply, error) {
+	s.log.WithContext(ctx).Info("GetLoginInfo params", req.Email, req.Phone)
 	uid := ""
 	if req.Email == "test@qq.com" {
 		uid = "u_eNAjI9cFGZ1EfaoU" // 默认
@@ -43,6 +44,7 @@ func (s *UserService) GetLoginInfo(ctx context.Context, req *pb.GetLoginInfoRequ
 	if req.Phone == "12345678910" {
 		uid = "u_quVaM29CKonWxbes"
 	}
+	s.log.WithContext(ctx).Info("GetLoginInfo uid", uid)
 	res := &pb.GetLoginInfoReply{Uid: uid}
 	return res, nil
 }
