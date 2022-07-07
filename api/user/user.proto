@@ -3,6 +3,8 @@ syntax = "proto3";
 package api.user;
 
 import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
 
 option go_package = "user_service/api/user;user";
 option java_multiple_files = true;
@@ -12,11 +14,16 @@ service User {
   rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
   rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply);
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply);
-  rpc GetUser (GetUserRequest) returns (GetUserReply);
+  rpc GetUser (GetUserRequest) returns (GetUserReply) {
+    option (google.api.http) = {
+      get: "/get_user"
+    };
+  };
   rpc ListUser (ListUserRequest) returns (ListUserReply);
   rpc GetLoginInfo(GetLoginInfoRequest) returns (GetLoginInfoReply) {
     option (google.api.http) = {
-      post: "/login_info"
+      post: "/login_info",
+      body: "*"
     };
   };
 }
@@ -31,18 +38,28 @@ message DeleteUserRequest {}
 message DeleteUserReply {}
 
 message GetUserRequest {
-  string uid = 1;
+  string user_id = 1;
 }
-message GetUserReply {}
+message GetUserReply {
+  string name = 1;
+  int32 age = 2;
+  string work_job = 3;
+}
 
 message ListUserRequest {}
 message ListUserReply {}
 
 message GetLoginInfoRequest {
-	string email = 1;
-	string phone = 2;
+  string user_id = 1[json_name = "user_id"];
+  string email = 2;
+  string phone = 3;
 }
 
 message GetLoginInfoReply {
-	string uid = 1;
+  string uid = 1;
+  string u_token = 2;
+  string workJob = 3;
+  string workJob_test = 4;
+  google.protobuf.Any answer = 5;
+  repeated google.protobuf.Value answer_list = 6;
 }
